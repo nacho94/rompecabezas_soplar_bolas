@@ -1,9 +1,9 @@
 
 all:
-	javac rompecabezas.java
+	javac rompecabezas.java Tablero.java Celda.java
 
 run: all
-	java rompecabezas
+	java rompecabezas < entrada.txt
 
 .PHONY: clean
 
