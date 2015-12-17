@@ -16,7 +16,7 @@ public class Celda {
 
 	public Celda(Celda c) {
 		this.objetivo = c.isObjetivo();
-		this.bola = new Integer(c.getBola());
+		this.bola = c.getBola();
 	}
 
 	public void setBola(Integer bola) {
