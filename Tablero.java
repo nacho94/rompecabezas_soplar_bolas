@@ -8,6 +8,7 @@ public class Tablero {
 	private int filas = 0;
 	private int numeroBolas = 0;
 	private ArrayList<Integer> resultado = new ArrayList<Integer>();
+	private int patrones = 0;
 
 	private int deep = 0;
 
@@ -205,7 +206,7 @@ public class Tablero {
 		return result;
 	}
 
-	private boolean detectarPatronMovimientos() {
+	private int detectarPatronMovimientos() {
 		int tam = resultado.size();
 		if(tam >= 4) {
 			//p("           @@@@@@        comprobar patron de movimientos: tam=" + tam + " -- tam/2=" + (tam/2));
@@ -221,15 +222,23 @@ public class Tablero {
 					}
 				}
 				if(coincidencia) {
-					return true;
+					
+					return i;
 				}
 			}
 		}
 		
-		return false;
+		return -1;
 	}
 
 	private boolean buscarSolucionRecursiva(Celda[][] t, int empezarEnBola) throws Exception {
+		if(patrones > 0 ) {
+			p("PATRONES= " + patrones);
+			patrones--;
+			resultado.remove(resultado.size()-1);
+			System.out.println("//////////////" +resultado);
+			return false;
+		}
 
 		deep++;
 		p(strRepeat(">", deep) + " buscarSolucionRecursiva::deep= " + deep + ", empezarEnBola= " + empezarEnBola);
@@ -241,8 +250,10 @@ public class Tablero {
 				resultado.add(i+1);
 				imprimir(t2);
 				System.out.println(resultado);
-				if(detectarPatronMovimientos()) {
+				if(detectarPatronMovimientos() > 0) {
+					patrones = detectarPatronMovimientos();
 					p("        +++++++++patron de movimientos detectado");
+					System.out.println("    " + resultado);
 					break;
 					// boolean b = buscarSolucionRecursiva(t2,i+1);
 					// if(!b) {
@@ -259,6 +270,7 @@ public class Tablero {
 				}else {
 					boolean b = buscarSolucionRecursiva(t2,0);
 					if(!b) {
+						patrones--;
 						resultado.remove(resultado.size()-1);
 					}
 				}
