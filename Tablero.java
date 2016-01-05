@@ -209,76 +209,67 @@ public class Tablero {
 	private int detectarPatronMovimientos() {
 		int tam = resultado.size();
 		if(tam >= 4) {
-			//p("           @@@@@@        comprobar patron de movimientos: tam=" + tam + " -- tam/2=" + (tam/2));
-			int mit = (int)(tam/2);
+			//int mit = (int)(tam/2);
 			for(int i = 4; i<=tam; i += 2) {
-				//p(" *-*-* i=" + i);
 				boolean coincidencia = true;
 				for(int j = tam-1; j >= (tam - (i/2)); j--) {
-					//p(" =    =     === patron: get(j=" + j + ")=" + resultado.get(j) + " -- get(j-(i/2))=" + (j-(i/2)) + ")=" + resultado.get(j-(i/2)));
 					coincidencia &= resultado.get(j) == resultado.get(j-(i/2));
 					if(!coincidencia) {
 						break;
 					}
 				}
 				if(coincidencia) {
-					
-					return i;
+					return (int)i/2;
 				}
 			}
 		}
 		
-		return -1;
+		return 0;
+	}
+	
+	private void addResultado(int bola) {
+		resultado.add(bola);
+	}
+	
+	private void removeResultado() {
+		resultado.remove(resultado.size()-1);
 	}
 
 	private boolean buscarSolucionRecursiva(Celda[][] t, int empezarEnBola) throws Exception {
-		if(patrones > 0 ) {
-			p("PATRONES= " + patrones);
-			patrones--;
-			resultado.remove(resultado.size()-1);
-			System.out.println("//////////////" +resultado);
-			return false;
-		}
-
+		
 		deep++;
-		p(strRepeat(">", deep) + " buscarSolucionRecursiva::deep= " + deep + ", empezarEnBola= " + empezarEnBola);
+
 		Celda[][] t2 = duplicarCeldas(t);
 		for(int i = empezarEnBola; i<numeroBolas; i++) {
-			p(" *** BOLA: " + (i+1));
 			while(mover(i+1,t2) > 0) {
-				p(" *** Movidas bolas a partir de la bola " + (i+1));
-				resultado.add(i+1);
-				imprimir(t2);
-				System.out.println(resultado);
-				if(detectarPatronMovimientos() > 0) {
-					patrones = detectarPatronMovimientos();
-					p("        +++++++++patron de movimientos detectado");
-					System.out.println("    " + resultado);
-					break;
-					// boolean b = buscarSolucionRecursiva(t2,i+1);
-					// if(!b) {
-					// 	resultado.remove(resultado.size()-1);
-					// }	
-					// p(strRepeat("<", deep) + " buscarSolucionRecursiva(" + deep + ")");
-					// break;
-				}
+				addResultado(i+1);
 				if(comprobarSolucion(t2)) {
-					p(" !!! Encontrada la solución.");
 					deep--;
-					p(strRepeat("<", deep) + " buscarSolucionRecursiva(" + deep + ")");
 					return true;
+				}
+				patrones = detectarPatronMovimientos();
+				if(patrones > 0) {
+					patrones--;
+					removeResultado();
+					deep--;
+					return false;
 				}else {
-					boolean b = buscarSolucionRecursiva(t2,0);
-					if(!b) {
+					boolean b = buscarSolucionRecursiva(t2, 0);
+					if(b) {
+						deep--;
+						return b;
+					}
+					if(patrones > 0) {
 						patrones--;
-						resultado.remove(resultado.size()-1);
+						removeResultado();
+						deep--;
+						return false;
 					}
 				}
 			}
-			p(" --- No más movimientos con la bola " + (i+1));
 		}
+		removeResultado();
 		deep--;
-		p(strRepeat("<", deep) + " buscarSolucionRecursiva(" + deep + ")");
 		return false;
 	}
 
