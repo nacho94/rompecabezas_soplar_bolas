@@ -22,7 +22,6 @@ public class rompecabezas {
 
 		tablero.leerCoordenadasPosiciones(scan, true);
 		tablero.leerCoordenadasPosiciones(scan, false);
-		tablero.imprimir();
 
 		try{
 			tablero.buscarSolucion();
