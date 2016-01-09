@@ -105,7 +105,7 @@ public class Tablero {
 		throw new Exception("Bola " + bola + " not found");	
 	}
 
-	private int mover(Integer bola, Celda[][] t) throws Exception{
+	private int mover(Integer bola, Celda[][] t) throws Exception {
 		Point c = getCoordenadasBola(bola, t);
 		int movimientos = 0;
 		movimientos += moverIzquierda(c,t);
@@ -113,7 +113,12 @@ public class Tablero {
 		movimientos += moverArriba(c,t);
 		movimientos += moverAbajo(c,t);
 		return movimientos;
-	} 
+	}
+
+	private boolean puedoMover(Integer bola, Celda[][] t) throws Exception {
+		Celda[][] aux = duplicarCeldas(t);
+		return mover(bola, aux) > 0;
+	}
 
 	private void p(String m) {
 		System.out.println(m);
@@ -206,7 +211,7 @@ public class Tablero {
 		return result;
 	}
 
-	private int detectarPatronMovimientos() {
+	private boolean detectarPatronMovimientos() {
 		int tam = resultado.size();
 		if(tam >= 4) {
 			//int mit = (int)(tam/2);
@@ -219,62 +224,61 @@ public class Tablero {
 					}
 				}
 				if(coincidencia) {
-					return (int)i/2;
+					patrones = (int)i/2;
+					return true;
 				}
 			}
 		}
-		
-		return 0;
+		patrones = 0;
+		return false;
+	}
+
+	private void eliminarElementoPatron() {
+		patrones--;
+		removeResultado();
 	}
 	
 	private void addResultado(int bola) {
 		resultado.add(bola);
+		// System.out.println(resultado);
 	}
 	
 	private void removeResultado() {
 		resultado.remove(resultado.size()-1);
+		// System.out.println(resultado);
 	}
 
-	private boolean buscarSolucionRecursiva(Celda[][] t, int empezarEnBola) throws Exception {
-		
-		deep++;
+	private boolean buscarSolucionRecursiva(Celda[][] t) throws Exception {
 
-		Celda[][] t2 = duplicarCeldas(t);
-		for(int i = empezarEnBola; i<numeroBolas; i++) {
-			while(mover(i+1,t2) > 0) {
-				addResultado(i+1);
-				if(comprobarSolucion(t2)) {
-					deep--;
+		for(int bola = 1; bola <= numeroBolas; bola++) {
+			Celda[][] t2 = duplicarCeldas(t);
+			if (puedoMover(bola, t2)) {
+				mover(bola, t2);
+				addResultado(bola);
+				if (comprobarSolucion(t2)) {
 					return true;
 				}
-				patrones = detectarPatronMovimientos();
-				if(patrones > 0) {
-					patrones--;
-					removeResultado();
-					deep--;
+				if (detectarPatronMovimientos()) {
+					eliminarElementoPatron();
 					return false;
-				}else {
-					boolean b = buscarSolucionRecursiva(t2, 0);
-					if(b) {
-						deep--;
-						return b;
-					}
-					if(patrones > 0) {
-						patrones--;
-						removeResultado();
-						deep--;
-						return false;
-					}
 				}
+				boolean result = buscarSolucionRecursiva(t2);
+				if (result) {
+					return true;
+				}
+				if (patrones > 0) {
+					eliminarElementoPatron();
+					return false;
+				}
+				removeResultado();
 			}
 		}
-		removeResultado();
-		deep--;
+
 		return false;
 	}
 
 	public boolean buscarSolucion() throws Exception{
-		return buscarSolucionRecursiva(tablero,0);
+		return buscarSolucionRecursiva(tablero);
 	}
 
 	public void imprimirResultado() {
