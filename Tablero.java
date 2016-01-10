@@ -8,6 +8,7 @@ public class Tablero {
 	private int filas = 0;
 	private int numeroBolas = 0;
 	private ArrayList<Integer> resultado = new ArrayList<Integer>();
+	private ArrayList<ArrayList<Integer>> resultados = new ArrayList<ArrayList<Integer>>();
 	private int patrones = 0;
 
 	private int deep = 0;
@@ -200,7 +201,14 @@ public class Tablero {
 				}
 			}
 		}
+		resultados.add(new ArrayList<Integer>(resultado));
 		return true;
+	}
+
+	public void imprimirResultados() {
+		for(ArrayList<Integer> a: resultados) {
+			System.out.println(a);
+		}
 	}
 
 	private String strRepeat(String s, int c) {
@@ -255,9 +263,7 @@ public class Tablero {
 			if (puedoMover(bola, t2)) {
 				mover(bola, t2);
 				addResultado(bola);
-				if (comprobarSolucion(t2)) {
-					return true;
-				}
+				comprobarSolucion(t2);
 				if (detectarPatronMovimientos()) {
 					eliminarElementoPatron();
 					return false;

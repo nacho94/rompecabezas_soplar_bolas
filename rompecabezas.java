@@ -28,7 +28,7 @@ public class rompecabezas {
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
-		tablero.imprimirResultado();
+		tablero.imprimirResultados();
 	}
 
 }
