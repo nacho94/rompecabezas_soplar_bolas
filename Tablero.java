@@ -7,6 +7,7 @@ public class Tablero {
 	private int cols = 0;
 	private int filas = 0;
 	private int numeroBolas = 0;
+	private ArrayList<ArrayList<Integer> > resultadoTotal = new ArrayList<ArrayList<Integer> >();
 	private ArrayList<Integer> resultado = new ArrayList<Integer>();
 	private int patrones = 0;
 
@@ -200,6 +201,7 @@ public class Tablero {
 				}
 			}
 		}
+		resultadoTotal.add(new ArrayList<Integer>(resultado));
 		return true;
 	}
 
@@ -255,9 +257,7 @@ public class Tablero {
 			if (puedoMover(bola, t2)) {
 				mover(bola, t2);
 				addResultado(bola);
-				if (comprobarSolucion(t2)) {
-					return true;
-				}
+				comprobarSolucion(t2);
 				if (detectarPatronMovimientos()) {
 					eliminarElementoPatron();
 					return false;
@@ -282,6 +282,6 @@ public class Tablero {
 	}
 
 	public void imprimirResultado() {
-		System.out.println(resultado);
+		System.out.println(resultadoTotal);
 	}
 }
